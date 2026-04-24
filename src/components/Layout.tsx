@@ -5,7 +5,7 @@ import {
   LayoutDashboard, TrendingUp, ShoppingCart, Package,
   CreditCard, BarChart3, FileText, GitCompare,
   Users, Settings, ExternalLink, Moon, Sun,
-  Menu, X, LogOut, Bell, Inbox,
+  Menu, X, LogOut, Bell, Inbox, Receipt, ClipboardList,
 } from "lucide-react";
 
 interface NavItem {
@@ -25,6 +25,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Profit & Loss",       path: "/pnl",             icon: <BarChart3 size={18} />,     permission: "view:pnl" },
   { label: "GST Reports",         path: "/gst",             icon: <FileText size={18} />,      permission: "view:gst" },
   { label: "Unit Comparison",     path: "/units",           icon: <GitCompare size={18} />,    permission: "view:units" },
+  { label: "Billing / Invoice",    path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
+  { label: "Quotation",           path: "/quotation",       icon: <ClipboardList size={18} />, permission: "view:sales" },
   { label: "User Management",     path: "/users",           icon: <Users size={18} />,         permission: "view:users" },
   { label: "Settings",            path: "/settings",        icon: <Settings size={18} />,      permission: "view:settings" },
   { label: "Customer Portal",     path: "/customer-portal", icon: <ExternalLink size={18} />,  permission: "view:customerportal" },

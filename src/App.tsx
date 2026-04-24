@@ -18,6 +18,8 @@ const Leads           = lazy(() => import("@/pages/Leads"));
 const Users           = lazy(() => import("@/pages/Users"));
 const Settings        = lazy(() => import("@/pages/Settings"));
 const CustomerPortal  = lazy(() => import("@/pages/CustomerPortal"));
+const Billing         = lazy(() => import("@/pages/Billing"));
+const Quotation       = lazy(() => import("@/pages/Quotation"));
 
 // Page-level spinner (fast, lightweight)
 const PageSpinner = () => (
@@ -57,7 +59,9 @@ function AppRoutes() {
     <Suspense fallback={<PageSpinner />}>
       <Routes>
         {/* Root redirect */}
-        <Route path="/" element={<Navigate to={user?.role === "customer" ? "/customer-portal" : "/dashboard"} replace />} />
+        <Route path="/" element={
+          <Navigate to={!user ? "/login" : user.role === "customer" ? "/customer-portal" : "/dashboard"} replace />
+        } />
 
         {/* Public */}
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
@@ -101,13 +105,19 @@ function AppRoutes() {
         <Route path="/settings" element={
           <ProtectedRoute permission="view:settings"><Layout><Settings /></Layout></ProtectedRoute>
         } />
+        <Route path="/billing" element={
+          <ProtectedRoute permission="view:sales"><Layout><Billing /></Layout></ProtectedRoute>
+        } />
+        <Route path="/quotation" element={
+          <ProtectedRoute permission="view:sales"><Layout><Quotation /></Layout></ProtectedRoute>
+        } />
 
         {/* 404 */}
         <Route path="*" element={
           <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 text-center p-8">
             <p className="text-6xl font-black text-venkat-navy dark:text-venkat-orange mb-4">404</p>
             <p className="text-slate-600 dark:text-slate-300 mb-6">Page not found.</p>
-            <a href="/dashboard" className="btn-primary">Go to Dashboard</a>
+            <a href="#/dashboard" className="btn-primary">Go to Dashboard</a>
           </div>
         } />
       </Routes>

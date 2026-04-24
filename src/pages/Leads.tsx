@@ -4,7 +4,7 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import {
-  Plus, Search, Filter, Send, Mail, MessageSquare,
+  Plus, Search, Send, Mail, MessageSquare,
   Globe, Instagram, Phone, User, Building2,
   CheckCircle, Clock, TrendingUp, Download, Eye, X,
   Zap, RefreshCw,
@@ -385,7 +385,7 @@ export default function Leads() {
                 <th className="th">Product Interest</th>
                 <th className="th text-right">Est. Value</th>
                 <th className="th text-center">Status</th>
-                <th className="th text-center">Notified</th>
+                <th className="th">Email Status</th>
                 <th className="th">Date</th>
                 {can("manage:leads") && <th className="th text-center">Actions</th>}
               </tr>
@@ -419,14 +419,39 @@ export default function Leads() {
                   <td className="td text-center">
                     <span className={leadStatusColors[lead.status]}>{lead.status}</span>
                   </td>
-                  <td className="td text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <span title="Email" className={lead.emailSent ? "text-green-500" : "text-slate-300 dark:text-slate-600"}>
-                        <Mail size={14} />
-                      </span>
-                      <span title="WhatsApp" className={lead.whatsappSent ? "text-green-500" : "text-slate-300 dark:text-slate-600"}>
-                        <MessageSquare size={14} />
-                      </span>
+                  <td className="td">
+                    <div className="space-y-1 min-w-[120px]">
+                      {/* Welcome Email */}
+                      <div className="flex items-center gap-1.5">
+                        <Mail size={12} className={lead.emailSent ? "text-green-500" : "text-slate-300 dark:text-slate-600"} />
+                        <span className={`text-xs ${lead.emailSent ? "text-green-600 dark:text-green-400" : "text-slate-400"}`}>
+                          {lead.emailSent ? "Sent" : "Pending"}
+                        </span>
+                        {lead.emailSentAt && (
+                          <span className="text-[10px] text-slate-400">
+                            {new Date(lead.emailSentAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        )}
+                      </div>
+                      {/* 1hr Reminder */}
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={12} className={lead.reminderSent ? "text-blue-500" : lead.emailSent ? "text-amber-400" : "text-slate-300 dark:text-slate-600"} />
+                        <span className={`text-xs ${lead.reminderSent ? "text-blue-600 dark:text-blue-400" : lead.emailSent ? "text-amber-500" : "text-slate-400"}`}>
+                          {lead.reminderSent ? "1hr ✓" : lead.emailSent ? "1hr Pending" : "—"}
+                        </span>
+                        {lead.reminderSentAt && (
+                          <span className="text-[10px] text-slate-400">
+                            {new Date(lead.reminderSentAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        )}
+                      </div>
+                      {/* WhatsApp */}
+                      <div className="flex items-center gap-1.5">
+                        <MessageSquare size={12} className={lead.whatsappSent ? "text-green-500" : "text-slate-300 dark:text-slate-600"} />
+                        <span className={`text-xs ${lead.whatsappSent ? "text-green-600 dark:text-green-400" : "text-slate-400"}`}>
+                          {lead.whatsappSent ? "WA Sent" : "WA Pending"}
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td className="td text-xs text-slate-500 dark:text-slate-400">

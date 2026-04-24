@@ -1,14 +1,179 @@
 import React, { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { AlertTriangle, Package, Download, Search } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AlertTriangle, Download, Search, Plus, Upload, X, CheckCircle } from "lucide-react";
 import { inventoryItems, formatCurrency, getLowStockItems } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+
+// ── Add Product Modal ─────────────────────────────────────────
+const AddProductModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [saved, setSaved] = useState(false);
+  const [form, setForm] = useState({
+    code: "", product: "", category: "Panels", hsn: "",
+    unit1: 0, unit2: 0, minLevel: 0, unitOfMeasure: "Nos", rate: 0,
+  });
+
+  const nextCode = `VK${String(inventoryItems.length + 1).padStart(4, "0")}`;
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => { setSaved(false); onClose(); }, 1500);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="card w-full max-w-lg">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+          <div>
+            <h3 className="font-bold text-slate-800 dark:text-white">Add New Product</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Auto code: <span className="font-mono font-semibold text-venkat-orange">{nextCode}</span></p>
+          </div>
+          <button onClick={onClose}><X size={18} className="text-slate-400 hover:text-slate-600" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Product Code *</label>
+              <input className="input font-mono" placeholder={nextCode}
+                value={form.code || nextCode} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">HSN Code</label>
+              <input className="input" placeholder="8537" value={form.hsn}
+                onChange={e => setForm(f => ({ ...f, hsn: e.target.value }))} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Product Name *</label>
+            <input className="input" placeholder="e.g. LT Switchgear Panel 400A" value={form.product}
+              onChange={e => setForm(f => ({ ...f, product: e.target.value }))} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
+              <select className="select w-full" value={form.category}
+                onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                {["Panels","DB/PDB","Breakers","Bus Systems","Power Factor","Cables","Instruments"].map(c => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Unit of Measure</label>
+              <select className="select w-full" value={form.unitOfMeasure}
+                onChange={e => setForm(f => ({ ...f, unitOfMeasure: e.target.value }))}>
+                {["Nos","Mtr","Kg","Set","Lot"].map(u => <option key={u}>{u}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Unit 1 Stock</label>
+              <input type="number" className="input text-right" value={form.unit1}
+                onChange={e => setForm(f => ({ ...f, unit1: +e.target.value }))} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Unit 2 Stock</label>
+              <input type="number" className="input text-right" value={form.unit2}
+                onChange={e => setForm(f => ({ ...f, unit2: +e.target.value }))} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Min Level</label>
+              <input type="number" className="input text-right" value={form.minLevel}
+                onChange={e => setForm(f => ({ ...f, minLevel: +e.target.value }))} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Rate (₹)</label>
+            <input type="number" className="input text-right" placeholder="0" value={form.rate}
+              onChange={e => setForm(f => ({ ...f, rate: +e.target.value }))} />
+          </div>
+        </div>
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+          <button onClick={onClose} className="btn-secondary">Cancel</button>
+          <button onClick={handleSave} className="btn-primary">
+            {saved ? <><CheckCircle size={14} /> Saved!</> : <><Plus size={14} /> Add Product</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Bulk Upload Modal ─────────────────────────────────────────
+const BulkUploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const [dragging, setDragging] = useState(false);
+  const [uploaded, setUploaded] = useState(false);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="card w-full max-w-lg">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+          <div>
+            <h3 className="font-bold text-slate-800 dark:text-white">Bulk Upload Products</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Upload CSV with product details</p>
+          </div>
+          <button onClick={onClose}><X size={18} className="text-slate-400 hover:text-slate-600" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          {/* CSV format guide */}
+          <div className="bg-slate-50 dark:bg-slate-700/30 rounded-xl p-3">
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">CSV Format (headers required):</p>
+            <code className="text-xs text-venkat-navy dark:text-blue-300 font-mono block">
+              code, product, category, hsn, unit1, unit2, minLevel, unitOfMeasure, rate
+            </code>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Example: VK0021, MCCB 400A (3P), Breakers, 8536, 20, 15, 10, Nos, 14000</p>
+          </div>
+
+          {/* Drop zone */}
+          <div
+            onDragOver={e => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={e => { e.preventDefault(); setDragging(false); setUploaded(true); }}
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+              dragging ? "border-venkat-orange bg-orange-50 dark:bg-orange-900/10"
+              : uploaded ? "border-green-400 bg-green-50 dark:bg-green-900/10"
+              : "border-slate-300 dark:border-slate-600 hover:border-venkat-orange"
+            }`}
+            onClick={() => setUploaded(true)}
+          >
+            {uploaded ? (
+              <>
+                <CheckCircle size={32} className="text-green-500 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-green-700 dark:text-green-400">products_bulk.csv uploaded!</p>
+                <p className="text-xs text-slate-500 mt-1">Ready to import 12 products</p>
+              </>
+            ) : (
+              <>
+                <Upload size={32} className="text-slate-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Drop CSV file here or click to browse</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Supports .csv, .xlsx files</p>
+              </>
+            )}
+          </div>
+
+          {/* Download template */}
+          <button className="btn-secondary w-full justify-center text-xs">
+            <Download size={13} /> Download CSV Template
+          </button>
+        </div>
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+          <button onClick={onClose} className="btn-secondary">Cancel</button>
+          <button onClick={onClose} disabled={!uploaded} className="btn-primary disabled:opacity-50">
+            <Upload size={14} /> Import Products
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Inventory() {
   const { can } = useAuth();
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [unit, setUnit] = useState("all");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   const categories = ["All", ...Array.from(new Set(inventoryItems.map(i => i.category)))];
   const lowStockItems = getLowStockItems();
@@ -47,13 +212,19 @@ export default function Inventory() {
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Stock & Inventory</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">Current stock levels · {inventoryItems.length} SKUs</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <select className="select" value={unit} onChange={e => setUnit(e.target.value)}>
             <option value="all">All Units</option>
             <option value="unit1">Unit 1</option>
             <option value="unit2">Unit 2</option>
           </select>
-          {can("export:reports") && <button className="btn-primary"><Download size={15} /> Export</button>}
+          {can("export:reports") && <button className="btn-secondary"><Download size={15} /> Export</button>}
+          <button onClick={() => setShowBulkModal(true)} className="btn-secondary">
+            <Upload size={15} /> Bulk Upload
+          </button>
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            <Plus size={15} /> Add Product
+          </button>
         </div>
       </div>
 
@@ -127,6 +298,7 @@ export default function Inventory() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="th">Code</th>
                 <th className="th">Product</th>
                 <th className="th">Category</th>
                 <th className="th text-right">Unit 1</th>
@@ -143,6 +315,7 @@ export default function Inventory() {
                 const total = item.unit1 + item.unit2;
                 return (
                   <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 tr-hover">
+                    <td className="td font-mono font-semibold text-venkat-navy dark:text-blue-300 text-xs">{item.code}</td>
                     <td className="td font-medium text-slate-800 dark:text-slate-100">{item.product}</td>
                     <td className="td"><span className="badge-navy">{item.category}</span></td>
                     <td className="td text-right">{item.unit1.toLocaleString()}</td>
@@ -158,6 +331,9 @@ export default function Inventory() {
           </table>
         </div>
       </div>
+
+      {showAddModal  && <AddProductModal  onClose={() => setShowAddModal(false)} />}
+      {showBulkModal && <BulkUploadModal  onClose={() => setShowBulkModal(false)} />}
     </div>
   );
 }

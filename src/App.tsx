@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -130,11 +130,11 @@ export default function App() {
   if (!themeReady) return null;
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
         {!loading && <AppRoutes />}
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

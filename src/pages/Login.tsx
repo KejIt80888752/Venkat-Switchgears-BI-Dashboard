@@ -94,6 +94,15 @@ export default function Login() {
             <p className="text-[#8BAED6] text-xs mt-4 border-t border-white/10 pt-3">
               Manufacturing · Export · Electrical Contracts · AMC Services
             </p>
+            {/* Built by The Raise */}
+            <div className="mt-4 flex items-center gap-2">
+              <p className="text-[#8BAED6] text-[10px] uppercase tracking-widest flex-shrink-0">Built by</p>
+              <img
+                src="/Venkat-Switchgears-BI-Dashboard/the-raise-logo.png"
+                alt="The Raise"
+                className="h-5 object-contain brightness-0 invert opacity-70"
+              />
+            </div>
           </div>
         </div>
 

@@ -99,6 +99,18 @@ const Sidebar: React.FC<{ collapsed: boolean; onClose: () => void }> = ({ collap
         ))}
       </nav>
 
+      {/* Built by The Raise */}
+      {!collapsed && (
+        <div className="px-4 py-2 flex items-center gap-2 flex-shrink-0">
+          <p className="text-[#8BAED6] text-[9px] uppercase tracking-widest flex-shrink-0">Built by</p>
+          <img
+            src="/Venkat-Switchgears-BI-Dashboard/the-raise-logo.png"
+            alt="The Raise"
+            className="h-4 object-contain brightness-0 invert opacity-60"
+          />
+        </div>
+      )}
+
       {/* User info */}
       <div className="border-t border-white/10 px-3 py-3 flex-shrink-0">
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>

@@ -128,14 +128,14 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         <p className="text-slate-300 text-[11px] tracking-wide">Tally ERP · Peenya, Bangalore</p>
       </div>
 
-      {/* Built by The Raise — bottom right */}
-      <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-40">
-        <p className="text-slate-400 text-[9px] uppercase tracking-widest">Built by</p>
+      {/* The Raise + Powered by KEJ — bottom right */}
+      <div className="absolute bottom-6 right-8 flex flex-col items-end gap-0.5 opacity-40">
         <img
           src="/Venkat-Switchgears-BI-Dashboard/the-raise-logo.png"
           alt="The Raise"
           className="h-3.5 object-contain"
         />
+        <p className="text-slate-400 text-[9px] uppercase tracking-widest">Powered by KEJ</p>
       </div>
     </div>
   );

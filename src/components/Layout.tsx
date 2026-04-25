@@ -17,6 +17,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard",           path: "/dashboard",       icon: <LayoutDashboard size={18} /> },
+  { label: "Billing / Invoice",   path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
+  { label: "Quotation",           path: "/quotation",       icon: <ClipboardList size={18} />, permission: "view:sales" },
   { label: "Leads & Enquiries",   path: "/leads",           icon: <Inbox size={18} />,         permission: "view:leads" },
   { label: "Sales Reports",       path: "/sales",           icon: <TrendingUp size={18} />,    permission: "view:sales" },
   { label: "Purchase Reports",    path: "/purchases",       icon: <ShoppingCart size={18} />,  permission: "view:purchases" },
@@ -25,8 +27,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Profit & Loss",       path: "/pnl",             icon: <BarChart3 size={18} />,     permission: "view:pnl" },
   { label: "GST Reports",         path: "/gst",             icon: <FileText size={18} />,      permission: "view:gst" },
   { label: "Unit Comparison",     path: "/units",           icon: <GitCompare size={18} />,    permission: "view:units" },
-  { label: "Billing / Invoice",    path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
-  { label: "Quotation",           path: "/quotation",       icon: <ClipboardList size={18} />, permission: "view:sales" },
   { label: "User Management",     path: "/users",           icon: <Users size={18} />,         permission: "view:users" },
   { label: "Settings",            path: "/settings",        icon: <Settings size={18} />,      permission: "view:settings" },
   { label: "Customer Portal",     path: "/customer-portal", icon: <ExternalLink size={18} />,  permission: "view:customerportal" },

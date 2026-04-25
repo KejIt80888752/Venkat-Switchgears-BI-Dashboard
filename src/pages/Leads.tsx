@@ -7,7 +7,7 @@ import {
   Plus, Search, Send, Mail, MessageSquare,
   Globe, Instagram, Phone, User, Building2,
   CheckCircle, Clock, TrendingUp, Download, Eye, X,
-  Zap, RefreshCw,
+  Zap, RefreshCw, FileText,
 } from "lucide-react";
 import {
   leadsData, leadSourceColors, leadStatusColors,
@@ -210,6 +210,132 @@ const AddLeadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   );
 };
 
+// ── Email Template Preview Modal ──────────────────────────────
+const EmailTemplateModal: React.FC<{ lead: Lead; onClose: () => void }> = ({ lead, onClose }) => {
+  const [tab, setTab] = useState<"welcome" | "reminder">("welcome");
+
+  const welcomeBody = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+      <div style="background:#0D2B5E;padding:28px 32px;text-align:center">
+        <img src="https://venkatswitchgears.com/wp-content/uploads/2021/08/logo_vsg-web.png" alt="VSG" style="height:48px;object-fit:contain;background:white;padding:6px;border-radius:8px" />
+        <h1 style="color:white;margin:12px 0 4px;font-size:20px">Venkat Switchgears</h1>
+        <p style="color:#E87722;margin:0;font-size:11px;letter-spacing:2px;text-transform:uppercase">Synergizing Power</p>
+      </div>
+      <div style="padding:32px">
+        <p style="color:#1e293b;font-size:15px">Dear <strong>${lead.name}</strong>,</p>
+        <p style="color:#475569;line-height:1.7">Thank you for reaching out to <strong>Venkat Switchgears</strong>! We have received your enquiry regarding <strong>${lead.productInterest}</strong> and our team will get back to you within <strong>24 hours</strong> with a detailed quote.</p>
+        <div style="background:#f8fafc;border-left:4px solid #E87722;padding:12px 16px;margin:20px 0;border-radius:0 8px 8px 0">
+          <p style="margin:0;color:#64748b;font-size:12px">Enquiry Reference</p>
+          <p style="margin:4px 0 0;color:#0D2B5E;font-weight:bold;font-size:16px">${lead.id}</p>
+        </div>
+        <p style="color:#475569;line-height:1.7">Meanwhile, feel free to explore our product range:</p>
+        <a href="https://venkatswitchgears.com" style="display:inline-block;background:#E87722;color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:bold;margin:8px 0">Visit Website →</a>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0" />
+        <p style="color:#94a3b8;font-size:12px;margin:0">📞 +91 9448354274 / +91 9844021560<br/>📍 #150, 10th Main, 3rd Phase, Peenya Industrial Area, Bangalore – 560058</p>
+      </div>
+      <div style="background:#0D2B5E;padding:14px 32px;text-align:center">
+        <p style="color:#8BAED6;font-size:11px;margin:0">© 2025 Venkat Switchgears Pvt Ltd · Synergizing Power</p>
+      </div>
+    </div>`;
+
+  const reminderBody = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+      <div style="background:#0D2B5E;padding:28px 32px;text-align:center">
+        <img src="https://venkatswitchgears.com/wp-content/uploads/2021/08/logo_vsg-web.png" alt="VSG" style="height:48px;object-fit:contain;background:white;padding:6px;border-radius:8px" />
+        <h1 style="color:white;margin:12px 0 4px;font-size:20px">Following Up on Your Enquiry</h1>
+        <p style="color:#E87722;margin:0;font-size:11px;letter-spacing:2px;text-transform:uppercase">1 Hour Reminder</p>
+      </div>
+      <div style="padding:32px">
+        <p style="color:#1e293b;font-size:15px">Dear <strong>${lead.name}</strong>,</p>
+        <p style="color:#475569;line-height:1.7">This is a quick follow-up on your enquiry for <strong>${lead.productInterest}</strong> (Ref: <strong>${lead.id}</strong>).</p>
+        <p style="color:#475569;line-height:1.7">Our team is actively working on your requirement. You can expect a detailed response very soon. If you have any urgent queries, please don't hesitate to reach us directly.</p>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px;margin:20px 0">
+          <p style="margin:0;color:#9a3412;font-weight:bold;font-size:13px">⚡ Direct Contact</p>
+          <p style="margin:8px 0 0;color:#c2410c;font-size:13px">📞 +91 9448354274 (Sales Team)</p>
+          <p style="margin:4px 0 0;color:#c2410c;font-size:13px">📧 projects@venkatswitchgears.com</p>
+        </div>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0" />
+        <p style="color:#94a3b8;font-size:12px;margin:0">📍 #150, 10th Main, 3rd Phase, Peenya Industrial Area, Bangalore – 560058</p>
+      </div>
+      <div style="background:#0D2B5E;padding:14px 32px;text-align:center">
+        <p style="color:#8BAED6;font-size:11px;margin:0">© 2025 Venkat Switchgears Pvt Ltd · Synergizing Power</p>
+      </div>
+    </div>`;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="card w-full max-w-2xl max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+          <div>
+            <h3 className="font-bold text-slate-800 dark:text-white">Email Template Preview</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{lead.name} · {lead.id}</p>
+          </div>
+          <button onClick={onClose}><X size={18} className="text-slate-400 hover:text-slate-600" /></button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-1 bg-slate-100 dark:bg-slate-700/50 m-4 rounded-lg p-1">
+          <button
+            onClick={() => setTab("welcome")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-colors ${tab === "welcome" ? "bg-white dark:bg-slate-600 shadow-sm text-slate-800 dark:text-white" : "text-slate-500"}`}
+          >
+            <Mail size={14} />
+            Welcome Email
+            {lead.emailSent && <CheckCircle size={12} className="text-green-500" />}
+          </button>
+          <button
+            onClick={() => setTab("reminder")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-colors ${tab === "reminder" ? "bg-white dark:bg-slate-600 shadow-sm text-slate-800 dark:text-white" : "text-slate-500"}`}
+          >
+            <Clock size={14} />
+            1hr Reminder
+            {lead.reminderSent && <CheckCircle size={12} className="text-green-500" />}
+          </button>
+        </div>
+
+        {/* Status bar */}
+        <div className={`mx-4 mb-3 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between ${
+          (tab === "welcome" ? lead.emailSent : lead.reminderSent)
+            ? "bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800"
+            : "bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800"
+        }`}>
+          <div className="flex items-center gap-2">
+            {(tab === "welcome" ? lead.emailSent : lead.reminderSent)
+              ? <CheckCircle size={13} className="text-green-500" />
+              : <Clock size={13} className="text-amber-500" />}
+            <span className={tab === "welcome"
+              ? lead.emailSent ? "text-green-700 dark:text-green-400 font-medium" : "text-amber-700 dark:text-amber-400"
+              : lead.reminderSent ? "text-green-700 dark:text-green-400 font-medium" : "text-amber-700 dark:text-amber-400"}>
+              {tab === "welcome"
+                ? lead.emailSent ? `Sent at ${new Date(lead.emailSentAt!).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${new Date(lead.emailSentAt!).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}` : "Not sent yet"
+                : lead.reminderSent ? `Sent at ${new Date(lead.reminderSentAt!).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · ${new Date(lead.reminderSentAt!).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}` : "Pending — auto-sends 1hr after welcome email"}
+            </span>
+          </div>
+          <span className="text-slate-400 dark:text-slate-500">To: {lead.email || "—"}</span>
+        </div>
+
+        {/* Email HTML Preview */}
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white">
+            <iframe
+              srcDoc={tab === "welcome" ? welcomeBody : reminderBody}
+              className="w-full"
+              style={{ height: 480, border: "none" }}
+              title="Email Preview"
+            />
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <span className="text-xs text-slate-400">Auto-sent via SendGrid · CC: projects@venkatswitchgears.com</span>
+          <button onClick={onClose} className="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── Main Page ──────────────────────────────────────────────────
 export default function Leads() {
   const { can } = useAuth();
@@ -219,6 +345,7 @@ export default function Leads() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState<Lead | null>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState<Lead | null>(null);
 
   const filtered = leadsData.filter(l => {
     const matchSearch = l.name.toLowerCase().includes(search.toLowerCase())
@@ -420,7 +547,7 @@ export default function Leads() {
                     <span className={leadStatusColors[lead.status]}>{lead.status}</span>
                   </td>
                   <td className="td">
-                    <div className="space-y-1 min-w-[120px]">
+                    <div className="space-y-1 min-w-[130px]">
                       {/* Welcome Email */}
                       <div className="flex items-center gap-1.5">
                         <Mail size={12} className={lead.emailSent ? "text-green-500" : "text-slate-300 dark:text-slate-600"} />
@@ -452,6 +579,13 @@ export default function Leads() {
                           {lead.whatsappSent ? "WA Sent" : "WA Pending"}
                         </span>
                       </div>
+                      {/* View Template */}
+                      <button
+                        onClick={() => setShowTemplateModal(lead)}
+                        className="flex items-center gap-1 text-[10px] text-venkat-orange hover:text-venkat-orange-dark font-medium mt-0.5"
+                      >
+                        <FileText size={10} /> View Template
+                      </button>
                     </div>
                   </td>
                   <td className="td text-xs text-slate-500 dark:text-slate-400">
@@ -550,8 +684,9 @@ export default function Leads() {
       )}
 
       {/* Modals */}
-      {showAddModal    && <AddLeadModal onClose={() => setShowAddModal(false)} />}
-      {showNotifModal  && <NotificationModal lead={showNotifModal} onClose={() => setShowNotifModal(null)} />}
+      {showAddModal      && <AddLeadModal onClose={() => setShowAddModal(false)} />}
+      {showNotifModal    && <NotificationModal lead={showNotifModal} onClose={() => setShowNotifModal(null)} />}
+      {showTemplateModal && <EmailTemplateModal lead={showTemplateModal} onClose={() => setShowTemplateModal(null)} />}
     </div>
   );
 }

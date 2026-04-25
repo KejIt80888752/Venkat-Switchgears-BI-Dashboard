@@ -101,13 +101,13 @@ const Sidebar: React.FC<{ collapsed: boolean; onClose: () => void }> = ({ collap
 
       {/* The Raise + Powered by KEJ */}
       {!collapsed && (
-        <div className="px-4 py-2 flex flex-col gap-0.5 flex-shrink-0">
+        <div className="px-4 py-2 flex flex-col gap-0.5 flex-shrink-0 opacity-50">
           <img
             src="/Venkat-Switchgears-BI-Dashboard/the-raise-logo.png"
             alt="The Raise"
-            className="h-4 object-contain brightness-0 invert opacity-60"
+            className="h-4 object-contain brightness-0 invert"
           />
-          <p className="text-[#8BAED6] text-[9px] uppercase tracking-widest">Powered by KEJ</p>
+          <p className="text-white text-[9px] uppercase tracking-widest">Powered by KEJ</p>
         </div>
       )}
 

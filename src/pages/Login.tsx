@@ -95,13 +95,13 @@ export default function Login() {
               Manufacturing · Export · Electrical Contracts · AMC Services
             </p>
             {/* The Raise + Powered by KEJ */}
-            <div className="mt-4 flex flex-col gap-1">
+            <div className="mt-4 flex flex-col gap-0.5 opacity-50">
               <img
                 src="/Venkat-Switchgears-BI-Dashboard/the-raise-logo.png"
                 alt="The Raise"
-                className="h-5 object-contain brightness-0 invert opacity-70"
+                className="h-4 object-contain brightness-0 invert"
               />
-              <p className="text-[#8BAED6] text-[10px] uppercase tracking-widest">Powered by KEJ</p>
+              <p className="text-white text-[9px] uppercase tracking-widest">Powered by KEJ</p>
             </div>
           </div>
         </div>

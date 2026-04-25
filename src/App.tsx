@@ -21,10 +21,30 @@ const CustomerPortal  = lazy(() => import("@/pages/CustomerPortal"));
 const Billing         = lazy(() => import("@/pages/Billing"));
 const Quotation       = lazy(() => import("@/pages/Quotation"));
 
-// Page-level spinner (fast, lightweight)
+// Page-level spinner — same dual-ring style as loading screen
 const PageSpinner = () => (
   <div className="flex items-center justify-center h-64">
-    <div className="w-8 h-8 border-3 border-venkat-orange/20 border-t-venkat-orange rounded-full animate-spin" style={{ borderWidth: 3 }} />
+    <div className="relative flex items-center justify-center" style={{ width: 72, height: 72 }}>
+      {/* Outer orange ring */}
+      <svg className="animate-spin absolute" style={{ width: 72, height: 72, animationDuration: "1s" }} viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#E87722" strokeWidth="4"
+          strokeDasharray="60 220" strokeLinecap="round" />
+      </svg>
+      {/* Inner navy ring counter-spin */}
+      <svg className="animate-spin absolute" style={{ width: 54, height: 54, animationDuration: "1.5s", animationDirection: "reverse" }} viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#0D2B5E" strokeWidth="4"
+          strokeDasharray="30 250" strokeLinecap="round" />
+      </svg>
+      {/* VSG logo center */}
+      <div className="w-9 h-9 rounded-full bg-white shadow flex items-center justify-center border border-slate-100">
+        <img
+          src="https://venkatswitchgears.com/wp-content/uploads/2021/08/logo_vsg-web.png"
+          alt="VSG"
+          className="w-7 h-7 object-contain"
+          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
+      </div>
+    </div>
   </div>
 );
 

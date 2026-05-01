@@ -19,7 +19,8 @@ const Users           = lazy(() => import("@/pages/Users"));
 const Settings        = lazy(() => import("@/pages/Settings"));
 const CustomerPortal  = lazy(() => import("@/pages/CustomerPortal"));
 const Billing         = lazy(() => import("@/pages/Billing"));
-const Quotation       = lazy(() => import("@/pages/Quotation"));
+const Quotation         = lazy(() => import("@/pages/Quotation"));
+const CodeCorrections   = lazy(() => import("@/pages/CodeCorrections"));
 
 // Page-level spinner — same dual-ring style as loading screen
 const PageSpinner = () => (
@@ -130,6 +131,9 @@ function AppRoutes() {
         } />
         <Route path="/quotation" element={
           <ProtectedRoute permission="view:sales"><Layout><Quotation /></Layout></ProtectedRoute>
+        } />
+        <Route path="/code-corrections" element={
+          <ProtectedRoute permission="view:inventory"><Layout><CodeCorrections /></Layout></ProtectedRoute>
         } />
 
         {/* 404 */}

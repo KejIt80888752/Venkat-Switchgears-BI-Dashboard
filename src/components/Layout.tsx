@@ -5,7 +5,7 @@ import {
   LayoutDashboard, TrendingUp, ShoppingCart, Package,
   CreditCard, BarChart3, FileText, GitCompare,
   Users, Settings, ExternalLink, Moon, Sun,
-  Menu, X, LogOut, Bell, Inbox, Receipt, ClipboardList,
+  Menu, X, LogOut, Bell, Inbox, Receipt, ClipboardList, Tag,
 } from "lucide-react";
 
 interface NavItem {
@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Stock & Inventory",   path: "/inventory",       icon: <Package size={18} />,       permission: "view:inventory" },
   { label: "Quotation",           path: "/quotation",       icon: <ClipboardList size={18} />, permission: "view:sales" },
   { label: "Billing / Invoice",   path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
+  { label: "Code Corrections",    path: "/code-corrections", icon: <Tag size={18} />,           permission: "view:inventory" },
   // ── Rest ─────────────────────────────────────────
   { label: "Leads & Enquiries",   path: "/leads",           icon: <Inbox size={18} />,         permission: "view:leads" },
   { label: "Sales Reports",       path: "/sales",           icon: <TrendingUp size={18} />,    permission: "view:sales" },

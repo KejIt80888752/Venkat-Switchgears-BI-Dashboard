@@ -16,13 +16,15 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  // ── Top 4 (as requested) ──────────────────────────
   { label: "Dashboard",           path: "/dashboard",       icon: <LayoutDashboard size={18} /> },
-  { label: "Billing / Invoice",   path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
+  { label: "Stock & Inventory",   path: "/inventory",       icon: <Package size={18} />,       permission: "view:inventory" },
   { label: "Quotation",           path: "/quotation",       icon: <ClipboardList size={18} />, permission: "view:sales" },
+  { label: "Billing / Invoice",   path: "/billing",         icon: <Receipt size={18} />,       permission: "view:sales" },
+  // ── Rest ─────────────────────────────────────────
   { label: "Leads & Enquiries",   path: "/leads",           icon: <Inbox size={18} />,         permission: "view:leads" },
   { label: "Sales Reports",       path: "/sales",           icon: <TrendingUp size={18} />,    permission: "view:sales" },
   { label: "Purchase Reports",    path: "/purchases",       icon: <ShoppingCart size={18} />,  permission: "view:purchases" },
-  { label: "Stock & Inventory",   path: "/inventory",       icon: <Package size={18} />,       permission: "view:inventory" },
   { label: "Outstanding",         path: "/outstanding",     icon: <CreditCard size={18} />,    permission: "view:outstanding" },
   { label: "Profit & Loss",       path: "/pnl",             icon: <BarChart3 size={18} />,     permission: "view:pnl" },
   { label: "GST Reports",         path: "/gst",             icon: <FileText size={18} />,      permission: "view:gst" },

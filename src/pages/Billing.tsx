@@ -312,9 +312,12 @@ const PrintView: React.FC<{ invoice: Invoice; onClose: () => void }> = ({ invoic
 };
 
 // ── Main Billing Page ──────────────────────────────────────────
+type DocType = "invoice" | "saleorder" | "challan";
+
 export default function Billing() {
   const { can } = useAuth();
   const [tab, setTab] = useState<"new" | "list">("new");
+  const [docType, setDocType] = useState<DocType>("invoice");
   const [showPrint, setShowPrint] = useState<Invoice | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -353,26 +356,44 @@ export default function Billing() {
     party, gstin, address, placeOfSupply, items, status: "Draft",
   };
 
+  // Labels per doc type
+  const docLabels: Record<DocType, { title: string; sub: string; no: string; badge: string }> = {
+    invoice:   { title: "Tax Invoice",    sub: "GST Tax Invoice — Tally style",           no: "VSG/2025/0059",    badge: "badge-green" },
+    saleorder: { title: "Sale Order",     sub: "Sales Order before invoice generation",   no: "VSG/SO/2025/0024", badge: "badge-blue"  },
+    challan:   { title: "Sales Challan",  sub: "Delivery Challan / Dispatch Note",        no: "VSG/DC/2025/0018", badge: "badge-amber" },
+  };
+  const doc = docLabels[docType];
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Billing — Tax Invoice</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm">Create and manage GST invoices — Tally-style</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Billing — {doc.title}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">{doc.sub}</p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setTab("new")}
-            className={`btn-secondary ${tab === "new" ? "!bg-venkat-navy !text-white" : ""}`}
-          >
-            <Plus size={14} /> New Invoice
+        <div className="flex gap-2 flex-wrap">
+          {/* Document type selector */}
+          <div className="flex gap-1 bg-slate-100 dark:bg-slate-700/50 rounded-xl p-1">
+            {(["saleorder","challan","invoice"] as DocType[]).map(d => (
+              <button
+                key={d}
+                onClick={() => setDocType(d)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  docType === d
+                    ? "bg-venkat-navy text-white shadow"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                }`}
+              >
+                {d === "saleorder" ? "Sale Order" : d === "challan" ? "Challan" : "Invoice"}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setTab("new")} className={`btn-secondary ${tab === "new" ? "!bg-venkat-navy !text-white" : ""}`}>
+            <Plus size={14} /> New {doc.title}
           </button>
-          <button
-            onClick={() => setTab("list")}
-            className={`btn-secondary ${tab === "list" ? "!bg-venkat-navy !text-white" : ""}`}
-          >
-            <FileText size={14} /> Invoice List
+          <button onClick={() => setTab("list")} className={`btn-secondary ${tab === "list" ? "!bg-venkat-navy !text-white" : ""}`}>
+            <FileText size={14} /> {doc.title} List
           </button>
         </div>
       </div>

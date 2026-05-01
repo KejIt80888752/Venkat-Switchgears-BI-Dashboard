@@ -1,8 +1,180 @@
 import React, { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { AlertTriangle, Download, Search, Plus, Upload, X, CheckCircle } from "lucide-react";
-import { inventoryItems, formatCurrency, getLowStockItems } from "@/data/mockData";
+import { AlertTriangle, Download, Search, Plus, Upload, X, CheckCircle, TrendingUp, ShoppingCart } from "lucide-react";
+import { inventoryItems, productWiseSales, vendorWisePurchase, formatCurrency, getLowStockItems } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
+
+// ── Sales View Panel ──────────────────────────────────────────
+const SalesViewPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+      <div className="bg-white dark:bg-slate-800 w-full md:max-w-3xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-venkat-navy flex items-center justify-center">
+              <TrendingUp size={16} className="text-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-white">Product-wise Sales</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Manufacturing & Sales — FY 2024–25</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto p-5 space-y-4">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Total Products",  value: productWiseSales.length, color: "text-venkat-navy dark:text-blue-300" },
+              { label: "Total Units Sold",value: productWiseSales.reduce((s,p) => s+p.qty, 0).toLocaleString(), color: "text-green-600" },
+              { label: "Total Revenue",   value: formatCurrency(productWiseSales.reduce((s,p) => s+p.total, 0), true), color: "text-venkat-orange" },
+            ].map(c => (
+              <div key={c.label} className="card p-3 text-center">
+                <p className={`text-lg font-black ${c.color}`}>{c.value}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{c.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Sales Table */}
+          <div className="card p-4">
+            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-3 text-sm">Product-wise Sales Breakdown</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="th text-left">Product</th>
+                    <th className="th text-left">Category</th>
+                    <th className="th text-right">Unit 1</th>
+                    <th className="th text-right">Unit 2</th>
+                    <th className="th text-right">Qty Sold</th>
+                    <th className="th text-right">Total Sales</th>
+                    <th className="th text-right">Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productWiseSales.map((p, i) => {
+                    const totalAll = productWiseSales.reduce((s, x) => s + x.total, 0);
+                    const share = ((p.total / totalAll) * 100).toFixed(1);
+                    return (
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 tr-hover">
+                        <td className="td font-medium text-slate-800 dark:text-slate-100">{p.product}</td>
+                        <td className="td"><span className="badge-navy text-xs">{p.category}</span></td>
+                        <td className="td text-right text-slate-600 dark:text-slate-300">{formatCurrency(p.unit1, true)}</td>
+                        <td className="td text-right text-slate-600 dark:text-slate-300">{formatCurrency(p.unit2, true)}</td>
+                        <td className="td text-right font-semibold">{p.qty.toLocaleString()}</td>
+                        <td className="td text-right font-bold text-venkat-navy dark:text-blue-300">{formatCurrency(p.total, true)}</td>
+                        <td className="td text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div className="h-full bg-venkat-orange rounded-full" style={{ width: `${share}%` }} />
+                            </div>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">{share}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+          <button onClick={onClose} className="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Purchase View Panel ───────────────────────────────────────
+const PurchaseViewPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+      <div className="bg-white dark:bg-slate-800 w-full md:max-w-3xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-venkat-orange flex items-center justify-center">
+              <ShoppingCart size={16} className="text-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-white">Product Purchases</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Vendor-wise Purchase — FY 2024–25</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto p-5 space-y-4">
+          {/* Summary */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Total Vendors",   value: vendorWisePurchase.length, color: "text-venkat-navy dark:text-blue-300" },
+              { label: "Categories",      value: new Set(vendorWisePurchase.map(v => v.category)).size, color: "text-purple-600" },
+              { label: "Total Purchases", value: formatCurrency(vendorWisePurchase.reduce((s,v) => s+v.amount, 0), true), color: "text-venkat-orange" },
+            ].map(c => (
+              <div key={c.label} className="card p-3 text-center">
+                <p className={`text-lg font-black ${c.color}`}>{c.value}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{c.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Purchase Table */}
+          <div className="card p-4">
+            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-3 text-sm">Vendor-wise Purchase Breakdown</h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="th text-left">Vendor</th>
+                    <th className="th text-left">Category</th>
+                    <th className="th text-center">Unit</th>
+                    <th className="th text-right">Amount</th>
+                    <th className="th text-right">Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vendorWisePurchase.map((v, i) => {
+                    const totalAll = vendorWisePurchase.reduce((s, x) => s + x.amount, 0);
+                    const share = ((v.amount / totalAll) * 100).toFixed(1);
+                    return (
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 tr-hover">
+                        <td className="td font-medium text-slate-800 dark:text-slate-100">{v.vendor}</td>
+                        <td className="td"><span className="badge-blue text-xs">{v.category}</span></td>
+                        <td className="td text-center text-xs text-slate-500 dark:text-slate-400">{v.unit}</td>
+                        <td className="td text-right font-bold text-venkat-navy dark:text-blue-300">{formatCurrency(v.amount, true)}</td>
+                        <td className="td text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div className="h-full bg-venkat-navy rounded-full" style={{ width: `${share}%` }} />
+                            </div>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">{share}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+          <button onClick={onClose} className="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ── Add Product Modal ─────────────────────────────────────────
 const AddProductModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -174,6 +346,8 @@ export default function Inventory() {
   const [unit, setUnit] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [showSalesPanel, setShowSalesPanel] = useState(false);
+  const [showPurchasePanel, setShowPurchasePanel] = useState(false);
 
   const categories = ["All", ...Array.from(new Set(inventoryItems.map(i => i.category)))];
   const lowStockItems = getLowStockItems();
@@ -218,6 +392,12 @@ export default function Inventory() {
             <option value="unit1">Unit 1</option>
             <option value="unit2">Unit 2</option>
           </select>
+          <button onClick={() => setShowSalesPanel(true)} className="btn-secondary !border-venkat-navy !text-venkat-navy dark:!text-blue-300 hover:!bg-venkat-navy hover:!text-white">
+            <TrendingUp size={15} /> Sales
+          </button>
+          <button onClick={() => setShowPurchasePanel(true)} className="btn-secondary !border-venkat-orange !text-venkat-orange hover:!bg-venkat-orange hover:!text-white">
+            <ShoppingCart size={15} /> Purchases
+          </button>
           {can("export:reports") && <button className="btn-secondary"><Download size={15} /> Export</button>}
           <button onClick={() => setShowBulkModal(true)} className="btn-secondary">
             <Upload size={15} /> Bulk Upload
@@ -332,8 +512,10 @@ export default function Inventory() {
         </div>
       </div>
 
-      {showAddModal  && <AddProductModal  onClose={() => setShowAddModal(false)} />}
-      {showBulkModal && <BulkUploadModal  onClose={() => setShowBulkModal(false)} />}
+      {showAddModal      && <AddProductModal    onClose={() => setShowAddModal(false)} />}
+      {showBulkModal     && <BulkUploadModal    onClose={() => setShowBulkModal(false)} />}
+      {showSalesPanel    && <SalesViewPanel     onClose={() => setShowSalesPanel(false)} />}
+      {showPurchasePanel && <PurchaseViewPanel  onClose={() => setShowPurchasePanel(false)} />}
     </div>
   );
 }
